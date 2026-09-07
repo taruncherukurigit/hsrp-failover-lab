@@ -66,6 +66,24 @@ This project is deliberately scoped as a **verified, working implementation**, n
 
 The measured ~2 second failover is faster than the 3-second hold timer's theoretical maximum, which is expected: the hold timer represents the upper bound before failover triggers, not a fixed delay.
 
+**Evidence:**
+
+Continuous ping to the VIP, showing the exact moment of interruption and automatic recovery:
+
+![Ping during failure test](screenshots/failover-ping-during-test.png)
+
+Stable, continuous replies afterward — confirming this wasn't a one-off blip:
+
+![Ping stable after recovery](screenshots/failover-ping-recovered.png)
+
+`show standby brief` on the spare switch, confirming it assumed the Active role:
+
+![Financial-SW2 shows Active](screenshots/standby-brief-active-switch2.png)
+
+`show standby brief` on the primary after power was restored, confirming it correctly rejoined as Standby — not Active — despite its higher priority:
+
+![Primary switch rejoins as Standby](screenshots/standby-brief-switch1-rejoined.png)
+
 ## Real bugs encountered
 
 See [`TROUBLESHOOTING-LOG.md`](./TROUBLESHOOTING-LOG.md) for the full write-up. Three genuine issues were hit and resolved during this build — a firewall address-object scoping gap, a legacy IOS SSH limitation, and a fixed-width CLI parsing bug in the existing Topology Discovery pipeline that this project's new hardware exposed.
