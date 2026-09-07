@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HA/Failover Lab — Cherwood Financial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e16;
+    --panel: #0f1520;
+    --line: #1e2733;
+    --up: #00d68f;
+    --down: #ff3b5c;
+    --text: #d7dde5;
+    --text-dim: #6b7686;
+    --text-bright: #f4f7fa;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    line-height: 1.6;
+  }
+
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+
+  a { color: var(--up); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  header {
+    border-bottom: 1px solid var(--line);
+    padding: 20px 0;
+  }
+  header .wrap {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 920px;
+  }
+  .brand {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    color: var(--text-bright);
+    letter-spacing: -0.01em;
+  }
+  .brand span { color: var(--up); }
+  nav a {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-left: 24px;
+  }
+  nav a:hover { color: var(--text); }
+
+  .hero {
+    padding: 88px 0 64px;
+    text-align: center;
+  }
+  .hero .division {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+  }
+  .ticker {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 700;
+    font-size: clamp(64px, 14vw, 128px);
+    color: var(--up);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .ticker sup {
+    font-size: 0.35em;
+    color: var(--text-dim);
+    font-weight: 500;
+    vertical-align: super;
+    margin-left: 4px;
+  }
+  .ticker-label {
+    font-size: 15px;
+    color: var(--text-dim);
+    margin-top: 12px;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .hero h1 {
+    font-size: 30px;
+    font-weight: 500;
+    color: var(--text-bright);
+    margin-top: 40px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.35;
+  }
+
+  section {
+    padding: 48px 0;
+    border-top: 1px solid var(--line);
+  }
+  section h2 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--up);
+    margin-bottom: 24px;
+  }
+  section p {
+    max-width: 640px;
+    color: var(--text);
+    font-size: 16px;
+  }
+  section p + p { margin-top: 14px; }
+
+  .diagram {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 24px;
+    overflow-x: auto;
+    white-space: pre;
+    color: var(--text-dim);
+    margin: 24px 0;
+  }
+  .diagram .active { color: var(--up); }
+  .diagram .standby { color: var(--text-bright); }
+
+  .specs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 24px;
+  }
+  .spec {
+    background: var(--panel);
+    padding: 18px 20px;
+  }
+  .spec .k {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+  .spec .v {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    color: var(--text-bright);
+    margin-top: 4px;
+  }
+
+  .timeline {
+    margin-top: 28px;
+    border-left: 2px solid var(--line);
+    padding-left: 24px;
+  }
+  .event {
+    position: relative;
+    padding-bottom: 28px;
+  }
+  .event:last-child { padding-bottom: 0; }
+  .event::before {
+    content: '';
+    position: absolute;
+    left: -29px;
+    top: 4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-dim);
+  }
+  .event.down::before { background: var(--down); }
+  .event.up::before { background: var(--up); }
+  .event .t {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  .event .d {
+    font-size: 15px;
+    color: var(--text);
+    margin-top: 2px;
+  }
+
+  .bugs { margin-top: 20px; }
+  .bug {
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+  }
+  .bug .title {
+    font-size: 15px;
+    color: var(--text-bright);
+    font-weight: 500;
+  }
+  .bug .detail {
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-top: 6px;
+  }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding: 40px 0 60px;
+  }
+  footer .links a {
+    margin-right: 20px;
+    font-size: 14px;
+  }
+  footer .cross {
+    margin-top: 24px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+  footer .cross a { color: var(--text-dim); }
+  footer .cross a:hover { color: var(--up); }
+
+  @media (max-width: 600px) {
+    .specs { grid-template-columns: 1fr; }
+    nav a { margin-left: 14px; font-size: 13px; }
+    .hero { padding: 60px 0 48px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="brand">CHERWOOD <span>FINANCIAL</span></div>
+    <nav>
+      <a href="https://tarunc.com">Portfolio</a>
+      <a href="https://github.com/taruncherukurigit/hsrp-failover-lab">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="division">HA / FAILOVER LAB</div>
+    <div class="ticker">2<sup>SEC</sup></div>
+    <div class="ticker-label">Measured interruption when the active gateway lost power — not a theoretical spec.</div>
+    <h1>A single switch failure shouldn't cost a trading desk its connection. Here's the redundant gateway that makes sure it doesn't.</h1>
+  </div>
+
+  <section>
+    <h2>The setup</h2>
+    <p>Two Cisco 3560E switches share one virtual IP on VLAN 70 using HSRP. One is deterministically active, one is standby, and a client on the network never knows which physical switch is actually answering — it just points at the virtual address and keeps working.</p>
+    <p>Spanning Tree root is aligned to whichever switch is HSRP active, so Layer 2 and Layer 3 always agree on which device is the real center of the network — not two different switches pulling in different directions.</p>
+
+    <div class="diagram">10.10.70.0/24 — VLAN 70
+Virtual IP: <span class="active">10.10.70.1</span>
+
+<span class="active">Cherwood-3560E</span>  ── trunk ──  <span class="standby">Financial-SW2</span>
+10.10.70.2                    10.10.70.3
+priority 150                  priority 100
+<span class="active">HSRP: ACTIVE</span>                  <span class="standby">HSRP: STANDBY</span>
+STP: root                     STP: root secondary</div>
+
+    <div class="specs">
+      <div class="spec"><div class="k">Protocol</div><div class="v">HSRP, group 70</div></div>
+      <div class="spec"><div class="k">Virtual IP</div><div class="v">10.10.70.1</div></div>
+      <div class="spec"><div class="k">Hello / hold timers</div><div class="v">1s / 3s</div></div>
+      <div class="spec"><div class="k">Preemption</div><div class="v">Disabled, deliberately</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The test</h2>
+    <p>A continuous ping to the virtual IP was running from a real client before power was physically pulled on the active switch — the same failure a network actually experiences, not a config toggle simulating one.</p>
+
+    <div class="timeline">
+      <div class="event">
+        <div class="t">T+0:00</div>
+        <div class="d">Continuous ping to 10.10.70.1 running, stable at 1–5ms.</div>
+      </div>
+      <div class="event down">
+        <div class="t">T+0:04</div>
+        <div class="d">Power pulled on the active switch. Ping begins timing out.</div>
+      </div>
+      <div class="event up">
+        <div class="t">T+0:06</div>
+        <div class="d">Standby switch assumes the active role. Replies resume automatically — roughly 2 seconds of interruption, no manual intervention.</div>
+      </div>
+      <div class="event">
+        <div class="t">T+later</div>
+        <div class="d">Power restored to the original switch. It rejoins as standby, not active — confirming preemption was correctly left off.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What actually broke along the way</h2>
+    <p>Three real issues came up building this — a firewall scoping gap, a legacy IOS limitation, and a parsing bug in an already-shipped project that this hardware happened to expose. Full write-ups are in the repo.</p>
+
+    <div class="bugs">
+      <div class="bug">
+        <div class="title">Firewall silently blocked the new switch</div>
+        <div class="detail">A management-access policy was scoped to one specific IP, not a range — the new switch simply wasn't covered yet.</div>
+      </div>
+      <div class="bug">
+        <div class="title">Older IOS train doesn't support key-based SSH</div>
+        <div class="detail">Same vendor, same switch family, different IOS version — no key auth support at all. Handled with a per-device fallback, not a workaround.</div>
+      </div>
+      <div class="bug">
+        <div class="title">A long hostname broke a fixed-width parser</div>
+        <div class="detail">The topology-mapping pipeline misread a column when a hostname ran past 20 characters — wrong data, no error raised.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="links">
+      <a href="https://github.com/taruncherukurigit/hsrp-failover-lab">View on GitHub</a>
+      <a href="https://networksolutions.tarunc.com">Cherwood Network Solutions</a>
+      <a href="https://cherwood.tarunc.com">Cherwood Health</a>
+      <a href="https://packetgeist.tarunc.com">Packetgeist</a>
+    </div>
+    <div class="cross">Part of the <a href="https://tarunc.com">Cherwood Corporation</a> portfolio — Cherwood Financial division.</div>
+  </footer>
+
+</div>
+
+</body>
+</html>
