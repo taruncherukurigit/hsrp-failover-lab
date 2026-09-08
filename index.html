@@ -257,8 +257,8 @@
 
   <div class="hero">
     <div class="division">HA / FAILOVER LAB</div>
-    <div class="ticker">2<sup>SEC</sup></div>
-    <div class="ticker-label">Measured interruption when the active gateway lost power — not a theoretical spec.</div>
+    <div class="ticker">3.33<sup>SEC</sup></div>
+    <div class="ticker-label">Measured via Wireshark packet timestamps — up from an original ~2s stopwatch estimate. See the <a href="https://github.com/taruncherukurigit/packet-capture-casebook">Packet Capture Casebook</a> for the raw capture.</div>
     <h1>A single switch failure shouldn't cost a trading desk its connection. Here's the redundant gateway that makes sure it doesn't.</h1>
   </div>
 
@@ -299,7 +299,7 @@ STP: root                     STP: root secondary</div>
       </div>
       <div class="event up">
         <div class="t">T+0:06</div>
-        <div class="d">Standby switch assumes the active role. Replies resume automatically — roughly 2 seconds of interruption, no manual intervention.</div>
+        <div class="d">Standby switch assumes the active role. Replies resume automatically — measured at 3.33 seconds via packet timestamps (originally estimated ~2s by stopwatch), matching the configured 3s holdtime almost exactly.</div>
       </div>
       <div class="event">
         <div class="t">T+later</div>
@@ -332,6 +332,7 @@ STP: root                     STP: root secondary</div>
     <div class="links">
       <a href="https://github.com/taruncherukurigit/hsrp-failover-lab">View on GitHub</a>
       <a href="https://taruncherukurigit.github.io/hsrp-failover-lab/">GitHub Pages mirror</a>
+      <a href="https://github.com/taruncherukurigit/packet-capture-casebook">Packet Capture Casebook</a>
       <a href="https://networksolutions.tarunc.com">Cherwood Network Solutions</a>
       <a href="https://cherwood.tarunc.com">Cherwood Health</a>
       <a href="https://packetgeist.tarunc.com">Packetgeist</a>
