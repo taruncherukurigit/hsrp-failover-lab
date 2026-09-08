@@ -60,11 +60,11 @@ This project is deliberately scoped as a **verified, working implementation**, n
 1. A client (`10.10.70.50`) was connected to an access port on the spare switch and set to use the virtual IP (`10.10.70.1`) as its gateway.
 2. A continuous ping to the VIP was started and confirmed stable (1–5ms replies).
 3. Power was physically pulled on the primary switch (the HSRP Active device at the time).
-4. **Result: 2 consecutive dropped pings — approximately 2 seconds of interruption** — before replies resumed automatically, with no manual intervention.
+4. Result: 2 consecutive dropped pings — approximately 2 seconds of interruption — before replies resumed automatically, with no manual intervention. (Later re-measured precisely via Wireshark packet timestamps at 3.33 seconds — see the [Packet Capture Casebook](https://github.com/taruncherukurigit/packet-capture-casebook) for the raw capture and full breakdown.)
 5. `show standby brief` on the spare switch confirmed it had assumed the Active role, with the primary showing as unreachable.
 6. Power was restored to the primary. Once it rejoined, `show standby brief` confirmed it correctly reassumed **Standby** — not Active — despite its higher configured priority, proving the no-preemption design worked exactly as intended.
 
-The measured ~2 second failover is faster than the 3-second hold timer's theoretical maximum, which is expected: the hold timer represents the upper bound before failover triggers, not a fixed delay.
+The original ~2 second stopwatch measurement was a reasonable human-reaction-time estimate. A later packet-level re-measurement (Wireshark, real timestamps) puts the actual failover at 3.33 seconds — matching the configured 3-second hold timer almost exactly, as expected, since the hold timer is the upper bound before failover triggers.
 
 **Evidence:**
 
@@ -107,4 +107,6 @@ This project extended two already-shipped systems rather than standing alone:
 
 ---
 
-*Part of the [Cherwood Corporation](https://tarunc.com) portfolio — Cherwood Financial division.*
+**Related:** [Packet Capture Casebook](https://github.com/taruncherukurigit/packet-capture-casebook) — the packet-level re-measurement of this failover, plus SSL-VPN, LLDP, and DMZ segmentation captures from other divisions.
+
+Part of the Cherwood Corporation portfolio — Cherwood Financial division.
