@@ -1,9 +1,10 @@
-# HA/Failover Lab — Cherwood Financial
+# HSRP High-Availability Lab
 
-**Division:** Cherwood Financial (Cherwood Corporation portfolio)
+**Type:** Home lab project
 **Status:** Complete — technical build and live failure test verified
 **Protocol:** HSRP (Cisco), with Spanning Tree root alignment
 **Hardware:** Two Cisco Catalyst 3560E switches in a live active/standby pair
+**Project site:** [taruncherukurigit.github.io/hsrp-failover-lab](https://taruncherukurigit.github.io/hsrp-failover-lab/) · **Portfolio:** [taruncherukurigit.github.io/portfolio-page](https://taruncherukurigit.github.io/portfolio-page/)
 
 ---
 
@@ -11,7 +12,7 @@
 
 Every other project in this portfolio proves segmentation, automation, or wireless design — none of them prove **redundancy under real failure**. Uptime-critical design is explicitly expected knowledge for Network Engineer roles, and a network with a single point of failure at the gateway layer is a real, common failure mode in production environments.
 
-Cherwood Financial exists as a division specifically because "seconds of downtime = real money lost" is an intuitive, recognizable framing for why first-hop redundancy matters — more so than a generic "redundancy is good practice" pitch.
+The lab uses a finance-style scenario because seconds of gateway downtime translate directly into lost transactions, which makes the value of first-hop redundancy easy to see.
 
 This project is deliberately scoped as a **verified, working implementation**, not a differentiator: HSRP is a well-known, CCNA-level protocol. The value here isn't novelty — it's a real two-device failover, cabled and tested against an actual power-pull, with a measured result.
 
@@ -93,7 +94,7 @@ See [`TROUBLESHOOTING-LOG.md`](./TROUBLESHOOTING-LOG.md) for the full write-up. 
 This project extended two already-shipped systems rather than standing alone:
 
 - **Network Automation Toolkit** — the spare switch (`Financial-SW2`) was added to `inventory.py`, so nightly backup and drift-detection automatically cover it, using password-based auth (see troubleshooting log for why key-based auth wasn't available on this device).
-- **Automated Topology Discovery** — LLDP was enabled on the new inter-switch link, and the new physical connection is now visible on the live topology diagram at `netmap.tarunc.com`, generated the same way as every other link in the network.
+- **Automated Topology Discovery** — LLDP was enabled on the new inter-switch link, and the new physical connection appears on the automatically generated topology diagram, the same way as every other link in the network.
 
 ## Verification performed
 
@@ -107,6 +108,6 @@ This project extended two already-shipped systems rather than standing alone:
 
 ---
 
-**Related:** [Packet Capture Casebook](https://github.com/taruncherukurigit/packet-capture-casebook) — the packet-level re-measurement of this failover, plus SSL-VPN, LLDP, and DMZ segmentation captures from other divisions.
+**Related:** [Packet Capture Casebook](https://github.com/taruncherukurigit/packet-capture-casebook) — the packet-level re-measurement of this failover, plus SSL-VPN, LLDP and DMZ segmentation captures from my other lab projects.
 
-Part of the Cherwood Corporation portfolio — Cherwood Financial division.
+Part of my home lab portfolio: [taruncherukurigit.github.io/portfolio-page](https://taruncherukurigit.github.io/portfolio-page/)
